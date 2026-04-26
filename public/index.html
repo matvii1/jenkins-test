@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Todo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; max-width: 28rem; margin: 2rem auto; padding: 0 1rem; }
+    h1 { font-size: 1.25rem; }
+    form { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    input[type="text"] { flex: 1; padding: 0.5rem; }
+    button { padding: 0.5rem 0.75rem; cursor: pointer; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0; border-bottom: 1px solid #eee; }
+    li span { flex: 1; }
+    li.done span { text-decoration: line-through; opacity: 0.6; }
+  </style>
+</head>
+<body>
+  <h1>Todo</h1>
+  <form id="f">
+    <input id="t" type="text" placeholder="New task" autocomplete="off" />
+    <button type="submit">Add</button>
+  </form>
+  <ul id="list"></ul>
+  <script>
+    const KEY = "todo-items";
+    const list = document.getElementById("list");
+    const form = document.getElementById("f");
+    const input = document.getElementById("t");
+
+    function load() {
+      try {
+        return JSON.parse(localStorage.getItem(KEY) || "[]");
+      } catch {
+        return [];
+      }
+    }
+    function save(items) {
+      localStorage.setItem(KEY, JSON.stringify(items));
+    }
+    function render(items) {
+      list.innerHTML = "";
+      items.forEach((item, i) => {
+        const li = document.createElement("li");
+        li.className = item.done ? "done" : "";
+        const span = document.createElement("span");
+        span.textContent = item.text;
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.textContent = item.done ? "Undo" : "Done";
+        toggle.addEventListener("click", () => {
+          items[i].done = !items[i].done;
+          save(items);
+          render(items);
+        });
+        const del = document.createElement("button");
+        del.type = "button";
+        del.textContent = "Delete";
+        del.addEventListener("click", () => {
+          items.splice(i, 1);
+          save(items);
+          render(items);
+        });
+        li.append(span, toggle, del);
+        list.appendChild(li);
+      });
+    }
+
+    let items = load();
+    render(items);
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      items.push({ text, done: false });
+      input.value = "";
+      save(items);
+      render(items);
+    });
+  </script>
+</body>
+</html>
