@@ -1,0 +1,9 @@
+services:
+  todo:
+    build:
+      context: .
+    image: jenkins-test-todo:latest
+    environment:
+      PORT: 3000
+    ports:
+      - "${HOST_PORT:-3000}:3000"
