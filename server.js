@@ -14,6 +14,7 @@ const mime = {
 
 
 
+
 function safePublicPath(urlPath) {
   const decoded = decodeURIComponent(urlPath.split("?")[0]);
   const rel = decoded === "/" ? "index.html" : decoded.replace(/^\//, "");
